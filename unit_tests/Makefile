@@ -69,14 +69,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/workspace/CMakeFiles /home/ubuntu/workspace/CMakeFiles/progress.marks
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd /home/ubuntu/workspace && $(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/workspace/CMakeFiles /home/ubuntu/workspace/unit_tests/CMakeFiles/progress.marks
+	cd /home/ubuntu/workspace && $(MAKE) -f CMakeFiles/Makefile2 unit_tests/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ubuntu/workspace/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd /home/ubuntu/workspace && $(MAKE) -f CMakeFiles/Makefile2 unit_tests/clean
 .PHONY : clean
 
 # The main clean target
@@ -85,81 +85,56 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/ubuntu/workspace && $(MAKE) -f CMakeFiles/Makefile2 unit_tests/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/ubuntu/workspace && $(MAKE) -f CMakeFiles/Makefile2 unit_tests/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/ubuntu/workspace && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named NeuralNetworkCPP
+# Convenience name for target.
+unit_tests/CMakeFiles/run_tests.dir/rule:
+	cd /home/ubuntu/workspace && $(MAKE) -f CMakeFiles/Makefile2 unit_tests/CMakeFiles/run_tests.dir/rule
+.PHONY : unit_tests/CMakeFiles/run_tests.dir/rule
 
-# Build rule for target.
-NeuralNetworkCPP: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 NeuralNetworkCPP
-.PHONY : NeuralNetworkCPP
-
-# fast build rule for target.
-NeuralNetworkCPP/fast:
-	$(MAKE) -f CMakeFiles/NeuralNetworkCPP.dir/build.make CMakeFiles/NeuralNetworkCPP.dir/build
-.PHONY : NeuralNetworkCPP/fast
-
-#=============================================================================
-# Target rules for targets named SMS
-
-# Build rule for target.
-SMS: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 SMS
-.PHONY : SMS
-
-# fast build rule for target.
-SMS/fast:
-	$(MAKE) -f SMS/CMakeFiles/SMS.dir/build.make SMS/CMakeFiles/SMS.dir/build
-.PHONY : SMS/fast
-
-#=============================================================================
-# Target rules for targets named run_tests
-
-# Build rule for target.
-run_tests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 run_tests
+# Convenience name for target.
+run_tests: unit_tests/CMakeFiles/run_tests.dir/rule
 .PHONY : run_tests
 
 # fast build rule for target.
 run_tests/fast:
-	$(MAKE) -f unit_tests/CMakeFiles/run_tests.dir/build.make unit_tests/CMakeFiles/run_tests.dir/build
+	cd /home/ubuntu/workspace && $(MAKE) -f unit_tests/CMakeFiles/run_tests.dir/build.make unit_tests/CMakeFiles/run_tests.dir/build
 .PHONY : run_tests/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+run_tests.o: run_tests.cpp.o
+.PHONY : run_tests.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/NeuralNetworkCPP.dir/build.make CMakeFiles/NeuralNetworkCPP.dir/main.cpp.o
-.PHONY : main.cpp.o
+run_tests.cpp.o:
+	cd /home/ubuntu/workspace && $(MAKE) -f unit_tests/CMakeFiles/run_tests.dir/build.make unit_tests/CMakeFiles/run_tests.dir/run_tests.cpp.o
+.PHONY : run_tests.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+run_tests.i: run_tests.cpp.i
+.PHONY : run_tests.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/NeuralNetworkCPP.dir/build.make CMakeFiles/NeuralNetworkCPP.dir/main.cpp.i
-.PHONY : main.cpp.i
+run_tests.cpp.i:
+	cd /home/ubuntu/workspace && $(MAKE) -f unit_tests/CMakeFiles/run_tests.dir/build.make unit_tests/CMakeFiles/run_tests.dir/run_tests.cpp.i
+.PHONY : run_tests.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+run_tests.s: run_tests.cpp.s
+.PHONY : run_tests.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/NeuralNetworkCPP.dir/build.make CMakeFiles/NeuralNetworkCPP.dir/main.cpp.s
-.PHONY : main.cpp.s
+run_tests.cpp.s:
+	cd /home/ubuntu/workspace && $(MAKE) -f unit_tests/CMakeFiles/run_tests.dir/build.make unit_tests/CMakeFiles/run_tests.dir/run_tests.cpp.s
+.PHONY : run_tests.cpp.s
 
 # Help Target
 help:
@@ -167,14 +142,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... NeuralNetworkCPP"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... SMS"
 	@echo "... run_tests"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... run_tests.o"
+	@echo "... run_tests.i"
+	@echo "... run_tests.s"
 .PHONY : help
 
 
@@ -186,6 +159,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/ubuntu/workspace && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
