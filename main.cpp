@@ -18,14 +18,14 @@ matrix<T> matrixExp(matrix<T> x) {
 }
 
 template <typename T>
-matrix<T> hadamardProduct(const matrix<T>& x, const matrix<T>& y) {
+matrix<T> hadamardProduct(matrix<T>& x, matrix<T>& y) {
     //TODO(ian): Fix all this nonsense. We don't need to make tmp and tmp_int
     typename std::vector<T>::iterator itx;
     matrix<T> tmp(x.row, x.col, 0);
     typename std::vector<T>::iterator tmp_it = std::begin(tmp);
-    typename std::vector<T>::iterator ity = std::begin(y);
+    typename std::vector<T>::iterator ity = y.begin();
 
-    for(itx = std::begin(x); itx < std::end(x); ++itx) {
+    for(itx = x.begin(); itx < x.begin(); ++itx) {
         *tmp_it = *itx * *ity;
     }
     return tmp;
@@ -76,7 +76,8 @@ void matrixFillRandomReal(matrix<T>& weights) {
     boost::uniform_real<> range(0.0, 1.0);
     rng.seed(1);
 
-    boost::variate_generator<boost::mt19937, boost::uniform_real<>> roll(rng, range);
+    boost::variate_generator<boost::mt19937,
+                             boost::uniform_real<>> roll(rng, range);
 
     typename std::vector<T>::iterator it;
     for(it = std::begin(weights); it < weights.end(); ++it) {
@@ -88,7 +89,7 @@ template <typename T>
 matrix<T> nonlin(matrix<T> x, bool deriv=false) {
     matrix<T> y = x;
     std::vector<T> vec_out = {1.0, 1.0, 1.0, 1.0};
-    matrix<T> tmp(x.row, x.col, vec_out);
+    matrix<T> tmp(x.row, x.col, vec_out[0]);
     if(deriv) {
         y -= tmp;
         return x * y;
@@ -100,34 +101,44 @@ matrix<T> nonlin(matrix<T> x, bool deriv=false) {
 matrix<double> trainNetwork(const matrix<double> &input,
                             matrix<double> &output,
                             matrix<double> &weights) {
-    matrix<double> l0 = input;
-    matrix<double> tmp = l0 * weights;
-    matrix<double> l1 = nonlin(tmp);
-    matrix<double> l1error = output - l1;
+    matrix<double> l0 = input; // size: 12 (4, 3)
+    matrix<double> tmp = l0 * weights; // 12 (4,3) * 4 (4, 1)
+    matrix<double> l1 = nonlin(tmp); // 12 (4, 3) * 4 (4, 1)
+    matrix<double> l1error = output - l1; // 4 (4, 1) -
     matrix<double> result = nonlin(l1, true);
     matrix<double> l1delta = prod(l1error, result);
 
     result = trans(l0);
-    weights += prod(result, l1delta);
+    weights.operator+=(prod(result, l1delta));
+
     return l1;
 }
 
 int main() {
-    std::vector<double> vec = {0.0,0.0,1.0, 0.0,1.0,1.0, 1.0,0.0,1.0, 1.0,1.0,1.0};
-    std::vector<double> vec_out = {0,0,1,1};
+    std::vector<double> vec = {0.0,0.0,1.0,
+                               0.0,1.0,1.0,
+                               1.0,0.0,1.0,
+                               1.0,1.0,1.0};
+
+    std::vector<double> vec_out = {0,
+                                   0,
+                                   1,
+                                   1};
 
     matrix<double> output(4, 1, vec_out);
-    const matrix<double> input(4, 3, vec);
+    matrix<double> input(4, 3, vec);
+    input.printMatrix();
+    input.transm().printMatrix();
 
     matrix<double> weights{3, 1, 0};
     matrix<double> out{4, 1, 0};
 
-    matrixFillRandomReal(weights);
+    /*matrixFillRandomReal(weights);
 
     for(int i = 0; i < 10000; ++i) {
         out = trainNetwork(input, output, weights);
     }
     out.printMatrix();
-
+*/
     return 0;
 }

@@ -18,25 +18,25 @@ public:
     typename std::vector<T>::iterator begin();
     typename std::vector<T>::iterator end();
 
-    typename std::vector<T>::iterator begin() const;
-    typename std::vector<T>::iterator end() const;
+    signed int size();
+    signed int const size() const ;
+    matrix<T> transm();
 
     T& operator[](const std::pair<const unsigned int, const unsigned int>);
     matrix<T>& operator=(const matrix<T>&);
     inline std::ostream& operator<<(std::ostream&);
 
-    matrix<T> operator+(const matrix<T>&);
-    matrix<T> operator+(const T);
-    void operator+=(const T);
-    void operator+=(const matrix<T>&);
+    matrix<T> operator+(matrix<T>);
+    matrix<T> operator+( T);
+    void operator+=(T);
+    void operator+=(matrix<T>);
 
-
-    matrix<T> operator-(const matrix<T>&);
+    matrix<T> operator-(matrix<T>&);
     matrix<T> operator-(const T);
-    void operator-=(const T);
-    void operator-=(const matrix<T>&);
+    void operator-=(T);
+    void operator-=(matrix<T>);
 
-    matrix<T> operator/(const matrix<T>&);
+    matrix<T> operator/(matrix<T>&);
     matrix<T> operator/(T);
     void operator/=(const T);
     void operator/=(const matrix<T>&);
