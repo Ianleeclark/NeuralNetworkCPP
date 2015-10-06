@@ -73,8 +73,11 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+<<<<<<< HEAD
 
 # Added by Ian
 CMakeFiles*
 *.cmake
 CMakeCache.txt
+=======
+>>>>>>> aace54c70f66a759aba700fa05ffa1cc63a351e6

@@ -15,3 +15,5 @@ add_executable(NeuralNetworkCPP ${SOURCE_FILES})
 
 add_subdirectory("SMS")
 add_subdirectory("unit_tests")
+
+

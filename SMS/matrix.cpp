@@ -9,6 +9,12 @@ int verifyMatricesSymmetry(const matrix<T>& mat1, const matrix<T>& mat2) {
 }
 
 template <typename T>
+bool verifyMatricesOperate(const matrix<T>& x, const matrix<T>& y) {
+    return x.col == y.row;
+}
+
+
+template <typename T>
 typename std::vector<T>::iterator matrix<T>::begin() {
     return std::begin(this->__baseMatrix);
 }
@@ -34,18 +40,18 @@ matrix<T> matrix<T>::transm() {
     typename std::vector<T>::iterator it_tmp = tmp.begin();
     typename std::vector<T>::iterator it = this->begin();
 
-    signed int count_col = 0;
-    signed int count_row = 0;
+    signed int n = 0;
+    signed int X = 0;
 
-    while(1) {
-        if(count_col == this->col)
-            count_col = 0;
-        else if(count_row == this->row)
-            return tmp;
-        *it_tmp = this->__baseMatrix[count_row + this->col * count_col];
+    while(it_tmp != tmp.end()) {
+        *it_tmp = this->__baseMatrix[n+3*X];
+
+        if(++X == this->row) {
+            if(++n == this->col)
+                break;
+            X = 0;
+        }
         ++it_tmp;
-        ++count_col;
-        ++count_row;
     }
 
     return tmp;
@@ -106,7 +112,7 @@ template <typename T>
 inline std::ostream& matrix<T>::operator<<(std::ostream& os) {
     //TODO(ian): Print whole vector -- Maybe done
     typename std::vector<T>::iterator it;
-    
+
     for(it = std::begin(this->__baseMatrix);
         it < std::end(this->__baseMatrix); ++it)
         os << *it;
@@ -128,11 +134,13 @@ void matrix<T>::printMatrix() {
             std::cout << "]" << std::endl;
         std::cout << std::endl << "  ";
     }
+
+    std::cout << std::endl;
 }
 
 template <typename T>
 T& matrix<T>::operator[](const std::pair<const unsigned int,
-                         const unsigned int> Index) {
+        const unsigned int> Index) {
     if(col == 0) {
         return this->__baseMatrix[Index.first];
 
@@ -175,21 +183,20 @@ matrix<T> matrix<T>::operator+(const T) {
     return *this;
 }
 
-template <typename T>
-void matrix<T>::operator+=(T x) {
-    typename std::vector<T>::iterator it;
+/*template <typename t>
+void matrix<t>::operator+=(t x) {
+    typename std::vector<t>::iterator it;
 
-    for(it = std::begin(this->__baseMatrix);
-        it < std::end(this->__baseMatrix); ++it) {
+    for(it = std::begin(this->__basematrix);
+        it < std::end(this->__basematrix); ++it) {
         *it += x;
     }
-}
+}*/
 
 template <typename T>
-void matrix<T>::operator+=(matrix<T> x) {
-
+matrix<T> matrix<T>::operator+=(matrix<T> x) {
     typename std::vector<T>::iterator it;
-    typename std::vector<T>::iterator it2 = x.begin();
+    typename std::vector<T>::iterator it2 = this->begin();
 
     for(it = std::begin(this->__baseMatrix);
         it < std::end(this->__baseMatrix); ++it) {
@@ -197,6 +204,35 @@ void matrix<T>::operator+=(matrix<T> x) {
 
         ++it2;
     }
+
+    return *this;
+}
+
+template <typename T>
+matrix<T> simpleMultiply(matrix<T>& x, matrix<T>& y) {
+    matrix<T> mat_out(x.row, y.col, 0);
+
+    typename std::vector<T>::iterator it_x = x.begin();
+    typename std::vector<T>::iterator it_y = y.begin();
+    typename std::vector<T>::iterator mat_out_it = mat_out.begin();
+    signed int tmp = 0;
+
+    while(it_x != x.end()) {
+        tmp += *it_x * *it_y;
+
+        if(it_y == y.end()) {
+            it_y = y.begin();
+            *mat_out_it = tmp;
+            std::cout << *mat_out_it << std::endl;
+            tmp = 0;
+            ++mat_out_it;
+        } else {
+            ++it_y;
+        }
+        ++it_x;
+    }
+
+    return mat_out;
 }
 
 template <typename T>
@@ -215,7 +251,10 @@ matrix<T> matrix<T>::operator-(matrix<T>& mat2) {
         *it = *it1 - *it2;
 
         ++it1;
-        ++it2;
+        if(it2 == mat2.end())
+            it2 = mat2.begin();
+        else
+            ++it2;
     }
 
     return mat_out;
@@ -260,9 +299,18 @@ void matrix<T>::operator-=(matrix<T> x) {
 
 template <typename T>
 matrix<T> matrix<T>::operator/(matrix<T>& mat2) {
-    if(!verifyMatricesSymmetry(*this, mat2))
-        throw std::runtime_error("Matrices are not symmetrical.");
+    if(!verifyMatricesOperate(*this, mat2)) {
+        typename std::vector<T>::iterator it = std::begin(this->__baseMatrix);
+        typename std::vector<T>::iterator it2 = mat2.begin();
 
+        while(it != std::end(this->__baseMatrix)) {
+            *it /= *it2;
+            ++it;
+            ++it2;
+        }
+
+        return *this;
+    }
     matrix<T> mat_out(mat2.row, mat2.col, 0);
 
     typename std::vector<T>::iterator it1 = std::begin(this->__baseMatrix);
@@ -275,6 +323,8 @@ matrix<T> matrix<T>::operator/(matrix<T>& mat2) {
         ++it1;
         ++it2;
     }
+
+    return mat_out;
 }
 
 template <typename T>
@@ -300,34 +350,40 @@ void matrix<T>::operator/=(const T x) {
         *it /= x;
     }
 }
-
-template <typename T>
-bool verifyMatricesOperate(const matrix<T>& x, const matrix<T>& y) {
-    return x.col == y.row;
-}
-
 template <typename T>
 matrix<T> matrix<T>::operator*(matrix<T> mat2) {
     if(!verifyMatricesOperate(*this, mat2)) {
-        std::cout << "HERE WE ARE" << std::endl << "COL: " << this->col
-                  << " --- ROW: " << mat2.row <<  std::endl;
-        throw std::runtime_error("Matrices are not symmetrical.");
+        typename std::vector<T>::iterator it = std::begin(this->__baseMatrix);
+        typename std::vector<T>::iterator it2 = mat2.begin();
+
+        while(it != std::end(this->__baseMatrix)) {
+            *it *= *it2;
+            ++it;
+            if(it2 == mat2.end())
+                it2 = mat2.begin();
+            else
+                ++it2;
+        }
+
+        return *this;
     }
 
     matrix<T> mat_out(this->row, mat2.col, 0);
 
     typename std::vector<T>::iterator it1 = this->begin();
-    typename std::vector<T>::iterator it2 = this->begin();
+    typename std::vector<T>::iterator it2 = mat2.begin();
     typename std::vector<T>::iterator it;
 
     for(it = mat_out.begin(); it < mat_out.end(); ++it) {
         *it = *it1 * *it2;
 
         ++it1;
-        ++it2;
+        if(it2 == mat2.end())
+            it2 = mat2.begin();
+        else
+            ++it2;
     }
-    //std::transform(this->begin(), this->end(), mat2.begin(), mat_out.begin());
-    mat_out.printMatrix();
+
     return mat_out;
 }
 
@@ -346,11 +402,13 @@ matrix<T> matrix<T>::operator*(const T) {
 }
 
 template <typename T>
-void matrix<T>::operator*=(const T x) {
+matrix<T> matrix<T>::operator*=(const T x) {
     typename std::vector<T>::iterator it;
 
     for(it = std::begin(this->__baseMatrix);
         it < std::end(this->__baseMatrix); ++it) {
         *it *= x;
     }
+
+    return *this;
 }

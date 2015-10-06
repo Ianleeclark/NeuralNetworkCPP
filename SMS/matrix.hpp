@@ -26,10 +26,12 @@ public:
     matrix<T>& operator=(const matrix<T>&);
     inline std::ostream& operator<<(std::ostream&);
 
+    matrix<T> simpleMultiply(matrix<T>&, matrix<T>&);
+
     matrix<T> operator+(matrix<T>);
     matrix<T> operator+( T);
-    void operator+=(T);
-    void operator+=(matrix<T>);
+    //void operator+=(T);
+    matrix<T> operator+=(matrix<T>);
 
     matrix<T> operator-(matrix<T>&);
     matrix<T> operator-(const T);
@@ -43,7 +45,7 @@ public:
 
     matrix<T> operator*(matrix<T>);
     matrix<T> operator*(T);
-    void operator*=(const T);
+    matrix<T> operator*=(const T);
     void operator*=(const matrix<T>&);
 
     unsigned int row = 0;
