@@ -4,9 +4,6 @@
 #include <boost/generator_iterator.hpp>
 #include "SMS/matrix.cpp"
 
-//TODO(ian): Make a function to iterate through the matrices so I'm not
-// Reusing so much ugly code.
-
 template <typename T>
 matrix<T> matrixExp(matrix<T> x) {
     typename std::vector<T>::iterator it;
@@ -20,13 +17,17 @@ template <typename T>
 matrix<T> hadamardProduct(matrix<T>& x, matrix<T>& y) {
     //TODO(ian): Fix all this nonsense. We don't need to make tmp and tmp_int
     typename std::vector<T>::iterator itx;
-    matrix<T> tmp(x.row, x.col, 0);
+    matrix<T> tmp(x.row, y.col, 0);
     typename std::vector<T>::iterator tmp_it = std::begin(tmp);
     typename std::vector<T>::iterator ity = y.begin();
 
-    for(itx = x.begin(); itx < x.begin(); ++itx) {
+    for(itx = x.begin(); itx != x.begin(); ++itx) {
         *tmp_it = *itx * *ity;
+        std::cout << *tmp_it << std::endl;
+        ++tmp_it;
+        ++ity;
     }
+    //tmp.printMatrix();
     return tmp;
 }
 
@@ -55,24 +56,6 @@ matrix<T> prod(matrix<T>& x, matrix<T>& y) {
         return simpleMultiply(x, y);
 }
 
-template <typename T>
-matrix<T> trans(matrix<T> x) {
-    matrix<T> tmp(x.row, x.col, 0);
-
-    typename std::vector<T>::iterator it;
-    typename std::vector<T>::iterator it_tmp = std::begin(tmp);
-
-    //TODO(ian): The following line contains something really hacky
-    for(it = std::begin(x); it < x.end(); ++(++it)) {
-        *it_tmp = *it;
-        *(it_tmp + 1) = *(it - 1);
-
-        ++(++it_tmp);
-    }
-    return tmp;
-}
-
-
 /*
 This function is used to create a matrix with a uniform range (0,1]
 Which will be used for the creation of the initial weights.
@@ -85,10 +68,10 @@ void matrixFillRandomReal(matrix<T>& weights) {
     rng.seed(1);
 
     boost::variate_generator<boost::mt19937,
-                             boost::uniform_real<>> roll(rng, range);
+            boost::uniform_real<>> roll(rng, range);
 
     typename std::vector<T>::iterator it;
-    for(it = std::begin(weights); it < weights.end(); ++it) {
+    for(it = weights.begin(); it < weights.end(); ++it) {
         *it = 2 * roll() - 1;
     }
 }
@@ -99,7 +82,7 @@ matrix<T> nonlin(matrix<T> x, bool deriv=false) {
 
     if(deriv) {
         matrix<T> y = x;
-        y -= tmp;
+        return x * (tmp - x);
 
         return x * y;
     }
@@ -109,23 +92,20 @@ matrix<T> nonlin(matrix<T> x, bool deriv=false) {
     return (tmp / x);
 }
 
-matrix<double> trainNetwork(const matrix<double>& input,
-                            matrix<double>& output,
-                            matrix<double>& weights) {
+template <typename T>
+matrix<T> trainNetwork(const matrix<T>& input,
+                            matrix<T>& output,
+                            matrix<T>& weights) {
 
-    matrix<double> l0 = input;
-    matrix<double> tmp(l0.row,  weights.col, 0);
-    tmp = prod(l0, weights);
-    tmp.printMatrix();
+    matrix<T> l0 = input;
 
-    matrix<double> l1 = nonlin(tmp);
-    matrix<double> l1error = output - l1;
+    matrix<T> l1 = nonlin(prod(l0, weights));
+    matrix<T> l1error = output - l1;
 
-    matrix<double> result = nonlin(l1, true);
-    matrix<double> l1delta = l1error * result;
+    matrix<T> l1delta = l1error * nonlin(l1, true);
 
-    result = l0.transm();
-    weights += (result * l1delta);
+    matrix<T> result = l0.transm();
+    weights += prod(result, l1delta);
 
     return l1;
 }
@@ -149,7 +129,7 @@ int main() {
 
     matrixFillRandomReal(weights);
 
-    for(int i = 0; i < 3; ++i) {
+    for(int i = 0; i < 10000; ++i) {
         out = trainNetwork(input, output, weights);
     }
     out.printMatrix();

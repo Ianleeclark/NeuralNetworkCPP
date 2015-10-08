@@ -94,10 +94,8 @@ matrix<T>::matrix(const unsigned int row,
     this->row = row;
     this->col = col;
 
-    for(int x = 0; x <= row; ++x) {
-        for(int y = 0; y <= col; ++y) {
-            __baseMatrix.push_back(matrixvalue);
-        }
+    for(int x = 0; x < this->row * this->col; ++x) {
+        __baseMatrix.push_back(matrixvalue);
     }
 }
 
@@ -196,7 +194,7 @@ void matrix<t>::operator+=(t x) {
 template <typename T>
 matrix<T> matrix<T>::operator+=(matrix<T> x) {
     typename std::vector<T>::iterator it;
-    typename std::vector<T>::iterator it2 = this->begin();
+    typename std::vector<T>::iterator it2 = x.begin();
 
     for(it = std::begin(this->__baseMatrix);
         it < std::end(this->__baseMatrix); ++it) {
@@ -215,18 +213,20 @@ matrix<T> simpleMultiply(matrix<T>& x, matrix<T>& y) {
     typename std::vector<T>::iterator it_x = x.begin();
     typename std::vector<T>::iterator it_y = y.begin();
     typename std::vector<T>::iterator mat_out_it = mat_out.begin();
-    signed int tmp = 0;
+    double tmp = 0;
 
-    while(it_x != x.end()) {
-        tmp += *it_x * *it_y;
-
-        if(it_y == y.end()) {
-            it_y = y.begin();
+    while(mat_out_it != mat_out.end()) {
+        //TODO(ian): Ensure *.end() correctly returns.
+        if(it_y == y.end() - 1) {
+            tmp += *it_x * *it_y;
+            //std::cout << "[" << *it_x << "x" << *it_y << "]=" << tmp  << std::endl;
             *mat_out_it = tmp;
-            std::cout << *mat_out_it << std::endl;
+            it_y = y.begin();
             tmp = 0;
             ++mat_out_it;
         } else {
+            tmp += *it_x * *it_y;
+            //std::cout << "[" << *it_x << "x" << *it_y << "]=" << tmp  << std::endl;
             ++it_y;
         }
         ++it_x;
