@@ -26,11 +26,9 @@ public:
     matrix<T>& operator=(const matrix<T>&);
     inline std::ostream& operator<<(std::ostream&);
 
-    matrix<T> simpleMultiply(matrix<T>&, matrix<T>&);
-
     matrix<T> operator+(matrix<T>);
-    matrix<T> operator+( T);
-    //void operator+=(T);
+    matrix<T> operator+(const T);
+    void operator+=(T);
     matrix<T> operator+=(matrix<T>);
 
     matrix<T> operator-(matrix<T>&);
